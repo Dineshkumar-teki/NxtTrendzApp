@@ -1,6 +1,5 @@
 import {Component} from 'react'
 import {Route, Switch, Redirect} from 'react-router-dom'
-
 import LoginForm from './components/LoginForm'
 import Home from './components/Home'
 import Products from './components/Products'
@@ -28,27 +27,25 @@ class App extends Component {
     const {cartList} = this.state
     const idList = cartList.map(eachItem => eachItem.id)
     if (idList.includes(product.id)) {
-      this.incrementCartItemQuantity(product.id)
+      this.incrementCartItemQuantity(product.id, product.quantity)
     } else {
       this.setState(prevState => ({cartList: [...prevState.cartList, product]}))
     }
     //   TODO: Update the code here to implement addCartItem
   }
 
-  incrementCartItemQuantity = id => {
+  incrementCartItemQuantity = (id, quant) => {
     const {cartList} = this.state
-    const updatedCartList = cartList.map(eachItem =>
-      eachItem.id === id
-        ? {
-            id: eachItem.id,
-            title: eachItem.title,
-            brand: eachItem.brand,
-            quantity: eachItem.quantity + 1,
-            price: eachItem.price,
-            imageUrl: eachItem.imageUrl,
-          }
-        : eachItem,
-    )
+    const updatedCartList = cartList.map(eachItem => {
+      if (eachItem.id === id) {
+        const updatedQuantity = eachItem.quantity + quant
+        return {
+          ...eachItem,
+          quantity: updatedQuantity,
+        }
+      }
+      return eachItem
+    })
     this.setState({cartList: updatedCartList})
   }
 
@@ -92,17 +89,17 @@ class App extends Component {
         }}
       >
         <Switch>
-          <Route exact path="/login" component={LoginForm} />
-          <ProtectedRoute exact path="/" component={Home} />
-          <ProtectedRoute exact path="/products" component={Products} />
+          <Route exact path='/login' component={LoginForm} />
+          <ProtectedRoute exact path='/' component={Home} />
+          <ProtectedRoute exact path='/products' component={Products} />
           <ProtectedRoute
             exact
-            path="/products/:id"
+            path='/products/:id'
             component={ProductItemDetails}
           />
-          <ProtectedRoute exact path="/cart" component={Cart} />
-          <Route path="/not-found" component={NotFound} />
-          <Redirect to="not-found" />
+          <ProtectedRoute exact path='/cart' component={Cart} />
+          <Route path='/not-found' component={NotFound} />
+          <Redirect to='not-found' />
         </Switch>
       </CartContext.Provider>
     )
